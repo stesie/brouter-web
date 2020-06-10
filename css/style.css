@@ -739,3 +739,27 @@ table.dataTable.display tbody tr:hover.selected {
     so we ignore pointer events in this situation to avoid that*/
     pointer-events: none;
 }
+
+.surface-indicator-trail {
+    stroke: red;
+}
+
+.surface-indicator-forest {
+    stroke: goldenrod;
+}
+
+.surface-indicator-gravel {
+    stroke: green;
+}
+
+.surface-indicator-bicycle-road {
+    stroke: purple;
+}
+
+.surface-indicator-asphalt {
+    stroke: royalblue;
+}
+
+.surface-indicator-unknown {
+    stroke: grey;
+}

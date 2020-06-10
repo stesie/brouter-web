@@ -59,7 +59,77 @@ BR.Elevation = L.Control.Elevation.extend({
             g.parentNode.appendChild(g);
         }
 
-        if (track && track.getLatLngs().length > 0) {
+        var latlngs = track.getLatLngs();
+
+        if (track && latlngs.length > 0) {
+            this.options.surfaceLineClassFn = function(_, i) {
+                function waytagLookup(tagRe) {
+                    var matches = latlngs[i + 1].feature.wayTags.match(tagRe);
+                    return matches && matches[1];
+                }
+
+                var highwayType = waytagLookup(/highway=(\w+)/);
+
+                if (highwayType === 'path') {
+                    return 'surface-indicator-trail';
+                }
+
+                var surfaceType = waytagLookup(/surface=(\w+)/);
+                if (surfaceType === 'gravel' || surfaceType === 'fine_gravel' || surfaceType === 'compacted') {
+                    return 'surface-indicator-gravel';
+                }
+
+                if (
+                    surfaceType === 'ground' ||
+                    surfaceType === 'dirt' ||
+                    surfaceType === 'earth' ||
+                    surfaceType === 'grass' ||
+                    surfaceType === 'mud' ||
+                    surfaceType === 'sand'
+                ) {
+                    return 'surface-indicator-forest';
+                }
+
+                if (surfaceType === 'paved' || surfaceType === 'asphalt') {
+                    var bicycleType = waytagLookup('bicycle');
+                    if (
+                        bicycleType === 'yes' ||
+                        bicycleType === 'permissive' ||
+                        bicycleType === 'designated' ||
+                        waytagLookup('bicycle_road') === 'yes' ||
+                        waytagLookup('lcn') === 'yes'
+                    ) {
+                        return 'surface-indicator-bicycle-road';
+                    }
+
+                    return 'surface-indicator-asphalt';
+                }
+
+                if (surfaceType === null || surfaceType === 'unknown') {
+                    // assumptions, if surface type is not known ...
+
+                    if (highwayType === 'track') {
+                        // TODO limit to higher grades only?
+                        // maybe grad 1/2 = gravel; 3..5 = forest ?
+                        return 'surface-indicator-forest';
+                    }
+
+                    if (
+                        highwayType === 'motorway' ||
+                        highwayType === 'trunk' ||
+                        highwayType === 'primary' ||
+                        highwayType === 'secondary' ||
+                        highwayType === 'tertiary' ||
+                        highwayType === 'unclassified'
+                    ) {
+                        // ... "larger" roads are probably asphalt, even if not mapped so
+                        return 'surface-indicator-asphalt';
+                    }
+                }
+
+                return 'surface-indicator-unknown';
+            };
+
             this.addData(track.toGeoJSON(), layer);
 
             layer.on('mouseout', this._hidePositionMarker.bind(this));

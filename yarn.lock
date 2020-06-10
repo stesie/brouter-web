@@ -4886,9 +4886,9 @@ leaflet-editable@^1.1.0:
   resolved "https://registry.yarnpkg.com/leaflet-editable/-/leaflet-editable-1.2.0.tgz#a3a01001764ba58ea923381ee6a1c814708a0b84"
   integrity sha512-wG11JwpL8zqIbypTop6xCRGagMuWw68ihYu4uqrqc5Ep0wnEJeyob7NB2Rt5t74Oih4rwJ3OfwaGbzdowOGfYQ==
 
-leaflet-elevation@nrenner/Leaflet.Elevation#dev:
+leaflet-elevation@stesie/Leaflet.Elevation#surface-line-support:
   version "0.0.4"
-  resolved "https://codeload.github.com/nrenner/Leaflet.Elevation/tar.gz/9ae6a3caef5f01abb3e55e05376df2e0046f7449"
+  resolved "https://codeload.github.com/stesie/Leaflet.Elevation/tar.gz/cd0d99f4063482385c41df80c08091a6f2bdc78d"
 
 leaflet-filelayer@^1.2.0:
   version "1.2.0"
