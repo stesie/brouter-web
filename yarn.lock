@@ -4888,7 +4888,7 @@ leaflet-editable@^1.1.0:
 
 leaflet-elevation@stesie/Leaflet.Elevation#surface-line-support:
   version "0.0.4"
-  resolved "https://codeload.github.com/stesie/Leaflet.Elevation/tar.gz/cd0d99f4063482385c41df80c08091a6f2bdc78d"
+  resolved "https://codeload.github.com/stesie/Leaflet.Elevation/tar.gz/dfc24923cf9f51056be5a73dc5d53184dde9efaf"
 
 leaflet-filelayer@^1.2.0:
   version "1.2.0"
