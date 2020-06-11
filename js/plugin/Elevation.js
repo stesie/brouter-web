@@ -87,7 +87,7 @@ BR.Elevation = L.Control.Elevation.extend({
                     waytagLookup(/bicycle_road=(\w+)/) === 'yes' ||
                     waytagLookup(/lcn=(\w+)/) === 'yes';
 
-                if (highwayType === 'path' && (isNaturalSurface || surfaceType === null)) {
+                if (highwayType === 'path' && !isBicycle && (isNaturalSurface || surfaceType === null)) {
                     return 'surface-indicator-trail';
                 }
 
