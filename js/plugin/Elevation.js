@@ -69,8 +69,9 @@ BR.Elevation = L.Control.Elevation.extend({
                 }
 
                 var highwayType = waytagLookup(/highway=(\w+)/);
-
                 var surfaceType = waytagLookup(/surface=(\w+)/);
+                var bicycleType = waytagLookup(/bicycle=(\w+)/);
+
                 var isNaturalSurface =
                     surfaceType === 'ground' ||
                     surfaceType === 'dirt' ||
@@ -78,6 +79,13 @@ BR.Elevation = L.Control.Elevation.extend({
                     surfaceType === 'grass' ||
                     surfaceType === 'mud' ||
                     surfaceType === 'sand';
+
+                var isBicycle =
+                    bicycleType === 'yes' ||
+                    bicycleType === 'permissive' ||
+                    bicycleType === 'designated' ||
+                    waytagLookup(/bicycle_road=(\w+)/) === 'yes' ||
+                    waytagLookup(/lcn=(\w+)/) === 'yes';
 
                 if (highwayType === 'path' && (isNaturalSurface || surfaceType === null)) {
                     return 'surface-indicator-trail';
@@ -92,14 +100,7 @@ BR.Elevation = L.Control.Elevation.extend({
                 }
 
                 if (surfaceType === 'paved' || surfaceType === 'asphalt') {
-                    var bicycleType = waytagLookup('bicycle');
-                    if (
-                        bicycleType === 'yes' ||
-                        bicycleType === 'permissive' ||
-                        bicycleType === 'designated' ||
-                        waytagLookup('bicycle_road') === 'yes' ||
-                        waytagLookup('lcn') === 'yes'
-                    ) {
+                    if (isBicycle) {
                         return 'surface-indicator-bicycle-road';
                     }
 
