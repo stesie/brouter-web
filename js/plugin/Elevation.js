@@ -70,24 +70,25 @@ BR.Elevation = L.Control.Elevation.extend({
 
                 var highwayType = waytagLookup(/highway=(\w+)/);
 
-                if (highwayType === 'path') {
-                    return 'surface-indicator-trail';
-                }
-
                 var surfaceType = waytagLookup(/surface=(\w+)/);
-                if (surfaceType === 'gravel' || surfaceType === 'fine_gravel' || surfaceType === 'compacted') {
-                    return 'surface-indicator-gravel';
-                }
-
-                if (
+                var isNaturalSurface =
                     surfaceType === 'ground' ||
                     surfaceType === 'dirt' ||
                     surfaceType === 'earth' ||
                     surfaceType === 'grass' ||
                     surfaceType === 'mud' ||
-                    surfaceType === 'sand'
-                ) {
+                    surfaceType === 'sand';
+
+                if (highwayType === 'path' && (isNaturalSurface || surfaceType === null)) {
+                    return 'surface-indicator-trail';
+                }
+
+                if (isNaturalSurface) {
                     return 'surface-indicator-forest';
+                }
+
+                if (surfaceType === 'gravel' || surfaceType === 'fine_gravel' || surfaceType === 'compacted') {
+                    return 'surface-indicator-gravel';
                 }
 
                 if (surfaceType === 'paved' || surfaceType === 'asphalt') {
