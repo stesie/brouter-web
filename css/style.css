@@ -740,6 +740,10 @@ table.dataTable.display tbody tr:hover.selected {
     pointer-events: none;
 }
 
+.surface-indicator-segments {
+    stroke-width: 5;
+}
+
 .surface-indicator-trail {
     stroke: red;
 }
