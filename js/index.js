@@ -217,6 +217,9 @@
 
         elevation = new BR.Heightgraph();
 
+        BR.maxspeedColorizer(elevation);
+        BR.mtbSurfaceColorizer(elevation);
+
         profile = new BR.Profile();
         profile.on('update', function (evt) {
             BR.message.hide();

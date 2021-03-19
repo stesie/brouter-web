@@ -72,6 +72,7 @@ var paths = {
             'js/router/BRouter.js',
             'js/util/*.js',
             'js/plugin/*.js',
+            'js/plugin/heightgraph/*.js',
             'js/control/*.js',
             'js/index.js',
         ]),

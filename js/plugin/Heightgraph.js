@@ -1,11 +1,13 @@
 BR.Heightgraph = function (map, layersControl, routing, pois) {
-    Heightgraph = L.Control.Heightgraph.extend({
+    var Heightgraph = L.Control.Heightgraph.extend({
+        colorizers: [],
+
         options: {
             width: $('#map').outerWidth(),
             margins: {
                 top: 15,
                 right: 30,
-                bottom: 30,
+                bottom: 50,
                 left: 70,
             },
             expandControls: false,
@@ -149,6 +151,63 @@ BR.Heightgraph = function (map, layersControl, routing, pois) {
             }
         },
 
+        _buildFeature: function (latLngs, attributeType) {
+            var coordinates = [];
+            latLngs.forEach(function (latLng) {
+                coordinates.push([latLng.lng, latLng.lat, latLng.alt]);
+            });
+
+            return {
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: coordinates,
+                },
+                properties: {
+                    attributeType: attributeType,
+                },
+            };
+        },
+
+        _buildGeojsonForColorizer: function (colorizerName, partitionerFn, latLngs) {
+            var self = this;
+            var features = [];
+            var buffer = [];
+            var lastPartition = undefined;
+
+            latLngs.forEach(function (latLng) {
+                var currentPartition = partitionerFn(latLng);
+
+                if (currentPartition !== lastPartition) {
+                    if (buffer.length > 0) {
+                        features.push(self._buildFeature(buffer, lastPartition));
+                        buffer = buffer.slice(-1);
+                    }
+
+                    lastPartition = currentPartition;
+                }
+
+                buffer.push(latLng);
+            });
+
+            features.push(self._buildFeature(buffer, lastPartition));
+
+            return {
+                type: 'FeatureCollection',
+                features: features,
+                properties: {
+                    Creator: 'github.com/nrenner/brouter-web',
+                    records: features.length,
+                    summary: colorizerName,
+                },
+            };
+        },
+
+        registerColorizer: function (colorizerName, mapping, partitionerFn) {
+            this.colorizers.push(this._buildGeojsonForColorizer.bind(this, colorizerName, partitionerFn));
+            Heightgraph.prototype.options.mappings[colorizerName] = mapping;
+        },
+
         update: function (track, layer) {
             // bring height indicator to front, because of track casing in BR.Routing
             if (this._mouseHeightFocus) {
@@ -168,6 +227,9 @@ BR.Heightgraph = function (map, layersControl, routing, pois) {
                     $('#no-elevation-data').hide();
                 }
                 var geojsonFeatures = geoDataExchange.buildGeojsonFeatures(track.getLatLngs());
+                this.colorizers.forEach(function (colorizer) {
+                    geojsonFeatures.push(colorizer(track.getLatLngs()));
+                });
                 this.addData(geojsonFeatures);
 
                 // re-add handlers
