@@ -1,0 +1,11 @@
+node_modules/
+nbproject/
+.idea/
+/.project
+/config.js
+/keys.js
+/dist
+brouter-web*.zip
+yarn-error.log
+package-lock.json
+Dockerfile
