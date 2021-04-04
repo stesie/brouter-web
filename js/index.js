@@ -153,6 +153,9 @@
                     },
                 ],
                 value: ['route'],
+                onShown: function () {
+                    $('button.bootbox-accept', $(this)).focus();
+                },
                 callback: function (result) {
                     if (result !== null) {
                         if (result.indexOf('route') !== -1) {
@@ -452,6 +455,12 @@
             },
             urlHash
         );
+
+        BR.WhatsNew.init();
+
+        $('.modal').on('shown.bs.modal', function (e) {
+            $('input:visible:enabled:first', e.target).focus();
+        });
     }
 
     i18next.on('languageChanged', function (detectedLanguage) {

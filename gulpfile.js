@@ -28,6 +28,8 @@ var rename = require('gulp-rename');
 var browserSync = require('browser-sync');
 var merge = require('merge-stream');
 var babel = require('gulp-babel');
+var marked = require('marked');
+var fs = require('fs');
 
 const server = browserSync.create();
 
@@ -63,6 +65,7 @@ var paths = {
         )
         .concat([
             'js/Browser.js',
+            'js/WhatsNew.js',
             'js/Util.js',
             'js/Map.js',
             'js/LayersConfig.js',
@@ -78,6 +81,7 @@ var paths = {
         .concat('css/*.css'),
     images: mainNpmFiles().filter((f) => RegExp('.*.+(png|gif|svg)', 'i').test(f)),
     fonts: mainNpmFiles().filter((f) => RegExp('font-awesome/fonts/.*', 'i').test(f)),
+    changelog: 'CHANGELOG.md',
     locales: 'locales/*.json',
     layers: 'layers/**/*.geojson',
     layersDestName: 'layers.js',
@@ -185,6 +189,12 @@ gulp.task('boundaries', function () {
     return gulp.src(paths.boundaries).pipe(gulp.dest(paths.dest + '/boundaries'));
 });
 
+gulp.task('changelog', function (cb) {
+    var content = 'BR.changelog = `' + marked(fs.readFileSync(paths.changelog, 'utf-8')) + '`';
+    content = content.replace(/<h1.*<\/h1>/i, '');
+    fs.writeFile(paths.dest + '/changelog.js', content, cb);
+});
+
 gulp.task('reload', function (done) {
     server.reload();
     done();
@@ -199,6 +209,7 @@ gulp.task('watch', function () {
             remember.forget('scripts', event.path);
         }
     });
+    gulp.watch(paths.changelog, gulp.series('changelog', 'reload'));
     gulp.watch(paths.locales, gulp.series('locales', 'reload'));
     gulp.watch(paths.styles, gulp.series('styles', 'reload'));
     gulp.watch(paths.layersConfig, gulp.series('layers_config', 'reload'));
@@ -277,9 +288,16 @@ gulp.task('bump:json', function () {
 gulp.task('bump:html', function () {
     return gulp
         .src('./index.html')
-        .pipe(replace(/<sup class="version">(.*)<\/sup>/, '<sup class="version">' + pkg.version + '</sup>'))
+        .pipe(
+            replace(
+                /<sup class="version">(.*)<\/sup>/,
+                '<sup class="version">' + (nextVersion || pkg.version) + '</sup>'
+            )
+        )
         .pipe(gulp.dest('.'));
 });
+
+gulp.task('bump', gulp.series('bump:json', 'bump:html'));
 
 gulp.task('release:commit', function () {
     return gulp.src(['./index.html', './package.json']).pipe(git.commit('release: ' + nextVersion));
@@ -351,7 +369,8 @@ gulp.task(
         'images',
         'fonts',
         'locales',
-        'boundaries'
+        'boundaries',
+        'changelog'
     )
 );
 
@@ -458,7 +477,7 @@ gulp.task(
     'release',
     gulp.series(
         'release:init',
-        'bump:json',
+        'bump',
         'release:commit',
         'release:tag',
         'release:push',
