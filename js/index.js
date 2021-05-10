@@ -265,6 +265,14 @@
 
         pois = new BR.PoiMarkers(routing);
 
+        circlego = BR.circleGoArea(routing, nogos, pois);
+        if (circlego != null) {
+            pois.circlego = circlego;
+            circlego.addTo(map);
+        }
+
+        exportRoute = new BR.Export(router, pois, profile, circlego);
+
         routing.on('routing:routeWaypointEnd routing:setWaypointsEnd', function (evt) {
             search.clear();
             onUpdate(evt && evt.err);
@@ -301,7 +309,7 @@
             trackMessages.update(track, segments);
             trackAnalysis.update(track, segments);
 
-            exportRoute.update(latLngs);
+            exportRoute.update(latLngs, segments);
         }
 
         routing.addTo(map);
@@ -322,17 +330,9 @@
 
         nogos.addTo(map);
 
-        circlego = BR.circleGoArea(routing, nogos, pois);
-        if (circlego != null) {
-            pois.circlego = circlego;
-            circlego.addTo(map);
-        }
-
         var buttons = [drawButton, reverseRouteButton, nogos.getButton()];
         if (circlego) buttons.push(circlego.getButton());
         buttons.push(deletePointButton, deleteRouteButton);
-
-        exportRoute = new BR.Export(router, pois, circlego);
 
         L.easyBar(buttons).addTo(map);
         nogos.preventRoutePointOnCreate(routing);
